@@ -4,7 +4,7 @@
 *
 * Assembling : gcc -Wall main.c -pthread -o main
 *
-* Description : program writes numbers from each thread to file 
+* Description : client in chat 
 *
 * Copyright (c) 2021, ITS Partner LLC.
 * All rights reserved.
@@ -18,7 +18,7 @@
 
 #include "head_c.h"
 
-#define MESS_SIZE 1024
+#define MESS_SIZE 10
 
 int main () {
     int sock;
@@ -29,22 +29,27 @@ int main () {
         exit (EXIT_FAILURE);
     }
     addr.sin_family = AF_INET;
-    addr.sin_port = htons (3425);
+    addr.sin_port = htons (1321);
     addr.sin_addr.s_addr = htonl (INADDR_LOOPBACK);
 
     if (connect (sock, (struct sockaddr*) &addr, sizeof (addr)) < 0) {
         puts ("Failed connection");
         exit (EXIT_FAILURE);
     }
-    char mess[MESS_SIZE];
+    char message[MESS_SIZE];
 
-    while (scanf ("%s", mess)) {
-        if (strcmp (mess, "stop") == 0)
+    memset (message, ' ', MESS_SIZE);
+    fflush(stdin);
+
+    while (fgets (message, MESS_SIZE - 1, stdin)) {
+        if (strcmp (message, "stop\n") == 0)
             break;
-        if ((send (sock, mess, sizeof (mess), 0)) < 0){
+
+        if ((send (sock, message, strlen (message), 0)) < 0){
             puts ("Failed send mess");
             exit (EXIT_FAILURE);
         }
+        memset (message, '\0', MESS_SIZE);
     }
     close (sock);
 }

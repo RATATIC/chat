@@ -4,7 +4,7 @@
 *
 * Assembling : gcc -Wall main.c -pthread -o main
 *
-* Description : program writes numbers from each thread to file 
+* Description : server in chat
 *
 * Copyright (c) 2021, ITS Partner LLC.
 * All rights reserved.
@@ -23,15 +23,16 @@
 int main () {
 	int sock, listener_sock;
 	struct sockaddr_in addr;
+	
 	char buff[BUFF_SIZE];
-	int bytes_reading;
+	memset (buff,  '\0', BUFF_SIZE);	
 
 	if ((listener_sock = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
 		puts ("Failed creating socket");
 		exit (EXIT_FAILURE);
 	}
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons (3425);
+	addr.sin_port = htons (1321);
 	addr.sin_addr.s_addr = htonl (INADDR_ANY);
 	
 	if (bind (listener_sock, (struct sockaddr *) &addr, sizeof (addr)) < 0) {
@@ -44,13 +45,14 @@ int main () {
 		puts ("Failed accept sock");
 		exit (EXIT_FAILURE);
 	}
-	
+
 	while (1) {
-		if ((bytes_reading = recv (sock, buff, 1024, 0)) <= 0){
+		if ((recv (sock, buff, 1024, 0)) <= 0){
 			break;
 		}
-		printf("%s\n", buff);
+		printf ("%s", buff);
+		memset (buff,  '\0', BUFF_SIZE);
 	}
-	close(sock);
+	close (sock);
 	close (listener_sock);
 }
