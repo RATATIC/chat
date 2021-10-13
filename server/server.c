@@ -22,19 +22,22 @@
 
 int main () {
 	int sock, listener_sock;
-	struct sockaddr_in addr;
+	struct sockaddr_un addr;
 	
+	char* path = "/home/kagal/c/chat/text.txt";
+
 	char buff[BUFF_SIZE];
 	memset (buff,  '\0', BUFF_SIZE);	
 
-	if ((listener_sock = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
+	if ((listener_sock = socket (AF_UNIX, SOCK_STREAM, 0)) < 0) {
 		puts ("Failed creating socket");
 		exit (EXIT_FAILURE);
 	}
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons (1321);
-	addr.sin_addr.s_addr = htonl (INADDR_ANY);
-	
+	addr.sun_family = AF_UNIX;
+
+	remove ("/home/kagal/c/chat/text.txt");
+	strcpy (addr.sun_path, path);
+
 	if (bind (listener_sock, (struct sockaddr *) &addr, sizeof (addr)) < 0) {
 		puts ("Failed bind");
 		exit (EXIT_FAILURE);
@@ -55,4 +58,5 @@ int main () {
 	}
 	close (sock);
 	close (listener_sock);
+	remove ("/home/kagal/c/chat/text.txt");
 }

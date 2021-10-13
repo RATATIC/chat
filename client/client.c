@@ -22,15 +22,14 @@
 
 int main () {
     int sock;
-    struct sockaddr_in addr;
+    struct sockaddr_un addr;
 
-    if ((sock = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
+    if ((sock = socket (AF_UNIX, SOCK_STREAM, 0)) < 0) {
         puts ("Failed creating socket");
         exit (EXIT_FAILURE);
     }
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons (1321);
-    addr.sin_addr.s_addr = htonl (INADDR_LOOPBACK);
+    addr.sun_family = AF_UNIX;
+    strcpy (addr.sun_path, "/home/kagal/c/chat/text.txt");
 
     if (connect (sock, (struct sockaddr*) &addr, sizeof (addr)) < 0) {
         puts ("Failed connection");
